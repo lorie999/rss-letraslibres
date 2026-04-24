@@ -42,7 +42,6 @@ for seccio in SECCIONS:
         titol_tag = article.find("h2") or article.find("h3")
         link_tag = article.find("a", href=True)
         img_tag = article.find("img")
-        subtitol_tag = article.find("div", class_="cs-entry__subtitle")
 
         if not titol_tag or not link_tag:
             continue
@@ -52,11 +51,20 @@ for seccio in SECCIONS:
         if link.startswith("/"):
             link = "https://letraslibres.com" + link
 
-        subtitol = subtitol_tag.get_text(strip=True) if subtitol_tag else ""
         imatge = ""
-
         if img_tag:
             imatge = img_tag.get("src", "") or img_tag.get("data-src", "")
+
+        subtitol = ""
+        try:
+            resposta_article = requests.get(link, headers=HEADERS)
+            sopa_article = BeautifulSoup(resposta_article.text, "html.parser")
+            subtitol_tag = sopa_article.find("div", class_="cs-entry__subtitle")
+            if subtitol_tag:
+                subtitol = subtitol_tag.get_text(strip=True)
+            time.sleep(1)
+        except Exception:
+            pass
 
         if imatge:
             contingut = f'<img src="{imatge}" /><p>{subtitol}</p>'
