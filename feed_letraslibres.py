@@ -62,6 +62,10 @@ for seccio in SECCIONS:
             subtitol_tag = sopa_article.find("div", class_="cs-entry__subtitle")
             if subtitol_tag:
                 subtitol = subtitol_tag.get_text(strip=True)
+            else:
+                og_desc = sopa_article.find("meta", property="og:description")
+                if og_desc:
+                    subtitol = og_desc.get("content", "")
             time.sleep(1)
         except Exception:
             pass
